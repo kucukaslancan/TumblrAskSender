@@ -1,0 +1,24 @@
+﻿@model IEnumerable<TumbAsk.Models.ViewModels.QuestionLogViewModel>
+
+<div class="container mt-4">
+    <h2>Question Logs</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Sender</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr class="@(log.Status ? "table-success" : "table-danger")">
+                    <td>@log.Timestamp</td>
+                    <td>@log.Message</td>
+                    <td>@log.Username</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,153 @@
+﻿@model IEnumerable<TumbAsk.Models.ViewModels.BotListingVM>
+@{
+    ViewData["Title"] = "Bots";
+ 
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Bot Management</h2>
+    <a href="/Bot/Create" class="btn btn-primary mb-3">Add New Bot</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Bot ID</th>
+                <th>Status</th>
+                <th>Subject</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var botModelVM in Model)
+            {
+                    <tr>
+                    <td>@botModelVM.Bot.Id</td>
+                    <td id="status_@botModelVM.Bot.Id">@botModelVM.Bot.Status</td>
+
+                    <td>@botModelVM.Bot.Keyword</td>
+                        <td>
+                        <form asp-action="Start" method="post" style="display:inline;">
+                            <input type="hidden" name="botId" value="@botModelVM.Bot.Id" />
+                            <button type="submit" class="btn btn-sm btn-success">Start</button>
+                        </form>
+                        <form asp-action="Stop" method="post" style="display:inline;">
+                            <input type="hidden" name="botId" value="@botModelVM.Bot.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Stop</button>
+                        </form>
+                        <form asp-action="Pause" method="post" style="display:inline;">
+                            <input type="hidden" name="botId" value="@botModelVM.Bot.Id" />
+                            <button type="submit" class="btn btn-sm btn-warning">Pause</button>
+                        </form>
+                        <form asp-action="Delete" method="post" style="display:inline;">
+                            <input type="hidden" name="botId" value="@botModelVM.Bot.Id" />
+                            <button type="submit" class="btn btn-sm btn-dark">Delete</button>
+                        </form>
+                        <form asp-action="ViewAccounts" method="post" style="display:inline;">
+                            <input type="hidden" name="botId" value="@botModelVM.Bot.Id" />
+                            <button type="submit" class=btn btn-primary btn-sm">View Accounts (@botModelVM.UserCount)</button>
+                        </form>
+                        @if (botModelVM.UnsendedUsersCount > 0)
+                        {
+                             
+                            <button class="btn btn-primary start-stop-btn" data-bot-id="@botModelVM.Bot.Id">
+                                Start Question
+                            </button>
+                            <button type="button" class="btn btn-sm btn-info live-report-btn" data-bot-id="@botModelVM.Bot.Id" style="display:none;">
+                                Live Report
+                            </button>
+
+                             
+                            <button class="btn btn-secondary show-logs-btn" data-bot-id="@botModelVM.Bot.Id">
+                                Show Question Logs
+                            </button>
+                        }
+                    </td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+ 
+<div class="modal fade" id="logsModal" tabindex="-1" aria-labelledby="logsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logsModalLabel">Logs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span id="successCount">Success: 0</span>
+                    <span id="failureCount">Fail: 0</span>
+                </div>
+
+                <ul id="logsList" class="list-group" style="max-height: 300px; overflow-y: auto;">
+                    
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+<script src="~/js/bot.js"></script>
+<script>
+    @* // SignalR bağlantısını kur
+    const connection = new signalR.HubConnectionBuilder().withUrl("/botStatusHub").build();
+
+    // Status güncellemelerini al ve tabloya yansıt
+    connection.on("ReceiveStatusUpdate", (botId, status) => {
+        document.getElementById("status_" + botId).innerText = status;
+    });
+
+    // Log güncellemelerini al ve modal içinde göster
+    connection.on("ReceiveLogUpdate", (botId, message) => {
+        const logsList = document.getElementById("logsList");
+        const logItem = document.createElement("li");
+        logItem.className = "list-group-item";
+        logItem.textContent = `Bot ${botId}: ${message}`;
+        logsList.appendChild(logItem);
+    });
+
+    // Bağlantıyı başlat
+    connection.start();
+
+    // Start Question butonuna tıklayınca işlemi başlat ve modal aç
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".start-question-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const botId = this.getAttribute("data-bot-id");
+                // Logs modal'ını aç
+                $('#logsModal').modal('show');
+                // Mevcut logları temizle
+                document.getElementById("logsList").innerHTML = "";
+                fetch(`/Bot/StartQuestion?botId=${botId}`, {
+                    method: "POST"
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Question sending started successfully.");
+                        } else {
+                            alert("Failed to start question sending.");
+                        }
+                    });
+            });
+        });
+
+        // Show Question Logs button click event
+        document.querySelectorAll(".show-logs-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const botId = this.getAttribute("data-bot-id");
+                window.location.href = `/Bot/ShowQuestionLogs?botId=${botId}`;
+            });
+        });
+    }); *@
+</script>
+ 
+

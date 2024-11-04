@@ -1,0 +1,54 @@
+﻿@model IEnumerable<TumbAsk.Models.UserAccount>
+@{
+    ViewData["Title"] = $"Accounts Collected by {ViewBag.BotName}";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    int botId = ViewBag.BotId;
+}
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Blog Name</th>
+            <th>Blog Subject</th>
+            <th>Collected At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var account in Model)
+        {
+            <tr>
+                <td>@account.BlogName</td>
+                <td>@ViewBag.BlogSubject</td>
+                <td>@account.CollectedAt.ToString("g")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Sayfalama Kontrolleri -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @if (currentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="ViewAccounts" asp-route-botId="@ViewBag.BotId" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@ViewBag.PageSize">Previous</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+                <a class="page-link" asp-action="ViewAccounts" asp-route-botId="@ViewBag.BotId" asp-route-pageNumber="@i" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+            </li>
+        }
+
+        @if (currentPage < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="ViewAccounts" asp-route-botId="@ViewBag.BotId" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@ViewBag.PageSize">Next</a>
+            </li>
+        }
+    </ul>
+</nav>
